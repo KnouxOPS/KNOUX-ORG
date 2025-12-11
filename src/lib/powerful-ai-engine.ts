@@ -738,4 +738,3 @@ export const defaultSettings: AIEngineSettings = {
   nsfwThreshold: 0.7,
   language: "ar",
 };
-
