@@ -1,262 +1,194 @@
+-----
+
 # 🧠 Knoux SmartOrganizer PRO
 
-**AI-Powered Photo Organization Tool** - Transform chaos into order with intelligent classification, smart renaming, and automated organization using cutting-edge artificial intelligence.
+**Transforming digital chaos into organized intelligence, one image at a time.**
 
-![Knoux SmartOrganizer](https://img.shields.io/badge/Version-2.0.0-blue?style=for-the-badge&logo=artificial-intelligence)
-![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?style=for-the-badge&logo=typescript)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3+-06B6D4?style=for-the-badge&logo=tailwindcss)
+**Knoux SmartOrganizer PRO** is a state-of-the-art, AI-powered image organization tool designed for professionals, creatives, and anyone with large image collections. It automatically classifies, renames, and organizes your photos with precision, privacy, and speed using strictly client-side technology.
 
-## ✨ Features
+-----
 
-### 🤖 Core AI Features
+## ✨ Key Features
 
-- **Smart Classification** - Automatically categorize images (selfies, documents, nature, food, etc.)
-- **AI Auto-Renaming** - Generate descriptive filenames based on image content
-- **Face Detection** - Identify and count faces in images using face-api.js
-- **Duplicate Detection** - Find similar/duplicate images using perceptual hashing
-- **OCR Text Extraction** - Extract text from images using Tesseract.js
-- **NSFW Detection** - Content filtering and safety classification
-- **Smart Folder Organization** - Automatic categorization into organized folders
+### 🤖 The AI Powerhouse
 
-### 🎨 User Experience
+  * **Smart Classification:** Automatically categorize images into logical groups (Selfies, Documents, Nature, Food, etc.).
+  * **AI Auto-Renaming:** Generate descriptive, SEO-friendly filenames based on actual image content.
+  * **Face Detection & Counting:** Identify faces and demographic data using `face-api.js`.
+  * **Emotion Detection:** *PRO Feature* – Analyze the mood of subjects in photos and classify accordingly.
+  * **Duplicate Detection:** Detect exact duplicates and visually similar images using perceptual hashing.
+  * **OCR Text Extraction:** Extract usable text from images and documents using `Tesseract.js`.
+  * **NSFW Filtering:** Automatic safety classification and content filtering before processing.
 
-- **Beautiful Modern UI** - Clean, responsive design with smooth animations
-- **Real-time Processing** - Live progress tracking with AI status indicators
-- **Drag & Drop Upload** - Easy bulk image upload with preview
-- **Advanced Filtering** - Filter by category, size, date, content features
-- **Export Results** - Download organization reports and statistics
-- **Smart Suggestions** - AI-powered recommendations for better organization
+### 🎨 Pro User Experience
 
-### 🛠 Technical Features
+  * **Interactive Dashboard:** Live statistics on duplicates found, text extracted, and processing speed.
+  * **Modern UI:** Responsive React 18 design with `Framer Motion` animations and `Radix UI` primitives.
+  * **Theme Support:** Built-in Dark/Light toggle.
+  * **Smart Suggestions:** AI-powered recommendations for better folder structures.
+  * **Export Data:** *PRO Feature* – Export your organization reports to CSV or JSON.
+  * **Offline Capable:** Works fully offline after the initial model load.
 
-- **Offline Capable** - Works completely offline once models are loaded
-- **Web-based AI Models** - TensorFlow.js, face-api.js, Tesseract.js
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Dark/Light Theme** - Automatic theme switching
-- **Performance Optimized** - Efficient processing with progress tracking
+-----
+
+## 🔒 Security & Privacy First
+
+> **Your data never leaves your device.**
+
+  * **100% Client-Side Processing:** All machine learning models (TensorFlow.js, Tesseract, etc.) run directly in your browser.
+  * **Encrypted Local Storage:** Results and settings are stored securely on your local machine.
+  * **No Data Collection:** We do not track your images or upload them to external servers.
+
+-----
+
+## 🛠 Technical Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Frontend** | React 18, TypeScript, TailwindCSS, Vite |
+| **UI Library** | Radix UI, Framer Motion, Lucide Icons |
+| **AI / ML** | TensorFlow.js, face-api.js, Tesseract.js |
+| **Performance** | Web Workers (Parallel Processing), Virtualized Lists |
+| **Testing** | Vitest, ESLint, Prettier |
+
+-----
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+  * **Node.js:** v18 or higher
+  * **Package Manager:** npm or yarn
 
 ### Installation
 
-1. **Clone the repository**
+1.  **Clone the repository**
 
-   ```bash
-   git clone https://github.com/knoux/smart-organizer.git
-   cd smart-organizer
-   ```
+    ```bash
+    git clone https://github.com/KnouxOPS/KNOUX-ORG.git
+    cd KNOUX-ORG
+    ```
 
-2. **Install dependencies**
+2.  **Install dependencies**
 
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
-3. **Start the development server**
+3.  **Download AI Models (Optional but Recommended)**
+    For enhanced face detection, download the pre-trained models.
 
-   ```bash
-   npm run dev
-   ```
+      * Visit the [face-api.js model repository](https://github.com/justadudewhohacks/face-api.js/tree/master/weights).
+      * Download the `.json` and `.bin` files.
+      * Place them in `public/models/face-api/`.
+      * *Note: The app will work with fallback rules if these are missing.*
 
-4. **Open your browser**
-   Navigate to `http://localhost:8080`
+4.  **Start the development server**
 
-### Optional: AI Models Setup
+    ```bash
+    npm run dev
+    ```
 
-For enhanced AI features, download the face detection models:
+5.  **Launch**
+    Visit `http://localhost:8080` to start organizing\!
 
-1. Visit [face-api.js models](https://github.com/justadudewhohacks/face-api.js/tree/master/weights)
-2. Download all `.json` and `.bin` files
-3. Place them in `public/models/face-api/`
-
-The app works with fallback AI even without these models!
+-----
 
 ## 🎯 How to Use
 
-### 1. Upload Images
+1.  **Upload:** Drag and drop images onto the upload zone (supports JPEG, PNG, GIF, WebP, BMP, SVG).
+2.  **Configure:** Toggle specific AI agents (Rename, Face Detect, OCR, Duplicate Finding) via the sidebar.
+3.  **Process:** Click **"Smart Organize"**. Watch the real-time indicators as Web Workers process images in parallel.
+4.  **Review:** Use the dashboard to filter by category, view extracted text, or manage duplicates.
+5.  **Export:** Download your organized structure or export the metadata report to CSV/JSON.
 
-- Drag and drop images onto the upload zone
-- Or click to browse and select multiple images
-- Supports: JPEG, PNG, GIF, WebP, BMP, SVG
+-----
 
-### 2. Configure AI Processing
+## 🏗 Architecture & Project Structure
 
-- Toggle features: Auto-rename, Face detection, Text extraction, Duplicate finding
-- Adjust quality thresholds and processing options
+The project follows a modular architecture to separate UI concerns from the AI engine.
 
-### 3. Smart Organize
-
-- Click the "Smart Organize" button
-- Watch real-time AI analysis and classification
-- View detailed processing statistics
-
-### 4. Review and Filter
-
-- Use smart filters to view categorized images
-- Apply bulk actions to selected images
-- Export results and organization reports
-
-### 5. AI Suggestions
-
-- Review AI-powered organization suggestions
-- Apply recommendations with one click
-- Improve organization over time
-
-## 🏗 Architecture
-
-### Frontend Stack
-
-- **React 18** - Modern React with hooks and concurrent features
-- **TypeScript** - Type-safe development
-- **TailwindCSS** - Utility-first CSS framework
-- **Framer Motion** - Smooth animations and transitions
-- **Radix UI** - Accessible UI primitives
-
-### AI/ML Stack
-
-- **TensorFlow.js** - Browser-based machine learning
-- **face-api.js** - Face detection and recognition
-- **Tesseract.js** - OCR text extraction
-- **Custom Classification** - Rule-based image analysis
-
-### Build Tools
-
-- **Vite** - Fast development and building
-- **Vitest** - Unit testing framework
-- **ESLint + Prettier** - Code formatting and linting
-
-## 📂 Project Structure
-
-```
+```text
 src/
-├── components/ui/          # Reusable UI components
-│   ├── image-dropzone.tsx  # Drag & drop upload
-│   ├── image-grid.tsx      # Image display grid
-│   ├── filter-sidebar.tsx  # Advanced filtering
+├── components/
+│   ├── ui/                 # Reusable Radix/Tailwind components
+│   ├── image-dropzone.tsx  # Drag & drop logic
+│   ├── dashboard/          # Stats and charts
 │   └── ...
-├── hooks/                  # Custom React hooks
-│   └── use-image-organizer.ts
-├── lib/                    # Utilities and AI engine
-│   ├── ai-engine.ts        # Core AI processing
-│   └── utils.ts            # Helper functions
-├── pages/                  # Application pages
-│   ├── Index.tsx           # Main organizer interface
-│   └── NotFound.tsx        # 404 page
-├── types/                  # TypeScript definitions
-│   └── organizer.ts        # Core type definitions
+├── hooks/
+│   └── use-image-organizer.ts  # Main logic hook
+├── lib/
+│   ├── ai-engine.ts        # Core TensorFlow/ML logic
+│   ├── workers/            # Web Workers for background processing
+│   └── utils.ts            # Helpers
+├── pages/
+│   └── Index.tsx           # Main application entry
+├── types/
+│   └── organizer.ts        # TypeScript interfaces
 └── ...
 ```
 
-## 🔧 Configuration
+### API Reference (Internal)
 
-### Environment Variables
-
-No environment variables required - everything runs client-side!
-
-### AI Model Configuration
-
-Modify `src/lib/ai-engine.ts` to:
-
-- Add new AI models
-- Adjust classification thresholds
-- Customize processing options
-
-### UI Customization
-
-Update `tailwind.config.ts` to:
-
-- Change color schemes
-- Modify spacing and typography
-- Add custom animations
-
-## 🤝 Contributing
-
-We welcome contributions! Please:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Write TypeScript for type safety
-- Use existing UI components when possible
-- Add tests for new utilities
-- Follow the existing code style
-- Update documentation for new features
-
-## 📚 API Reference
-
-### `useImageOrganizer` Hook
-
-Main hook for image processing and organization.
+**`useImageOrganizer` Hook**
+The primary interface for the frontend to interact with the AI engine.
 
 ```typescript
-const {
-  images, // Array of processed images
-  progress, // Processing progress state
-  stats, // Processing statistics
-  processImages, // Start AI processing
-  addImages, // Add new images
-  removeImage, // Remove specific image
-  // ... more methods
+const { 
+  images,       // Array of processed images
+  progress,     // Real-time processing state
+  stats,        // Aggregated data (count, types, errors)
+  processImages // Trigger the AI pipeline
 } = useImageOrganizer();
 ```
 
-### `AIEngine` Class
-
-Core AI processing engine.
+**`AIEngine` Class**
+Located in `src/lib/ai-engine.ts`.
 
 ```typescript
 const aiEngine = new AIEngine();
-await aiEngine.analyzeImage(file); // Analyze single image
-const category = aiEngine.categorizeImage(analysis);
-const filename = aiEngine.generateSmartFilename(analysis);
+await aiEngine.initializeModels(); 
+const analysis = await aiEngine.analyzeImage(file);
+// Returns: { category, tags, faceCount, hasText, isSafe }
 ```
 
-## 🎨 Customization
+-----
 
-### Adding New Categories
+## 🔧 Configuration
 
-1. Update `ImageCategory` type in `src/types/organizer.ts`
-2. Add category logic in `AIEngine.categorizeImage()`
-3. Add icons and colors in UI components
+  * **Environment Variables:** None required (Client-side architecture).
+  * **Customizing Categories:** Edit `src/types/organizer.ts` to add new default categories.
+  * **Model Thresholds:** Adjust confidence thresholds for NSFW or Face Detection in `src/lib/ai-engine.ts`.
 
-### Custom AI Models
+-----
 
-1. Add model loading in `AIEngine.initializeModels()`
-2. Implement analysis logic in `AIEngine.analyzeImage()`
-3. Update UI to show model status
+## 🤝 Contributing
 
-## 🔒 Privacy & Security
+We welcome contributions from the community\!
 
-- **100% Client-Side** - No data sent to external servers
-- **Offline Capable** - Works without internet after initial load
-- **Local Processing** - All AI runs in your browser
-- **No Data Collection** - Your images never leave your device
+1.  **Fork** the repo.
+2.  **Create a feature branch:** `git checkout -b feature/amazing-feature`
+3.  **Commit your changes:** `git commit -m 'Add amazing feature'`
+4.  **Push to branch:** `git push origin feature/amazing-feature`
+5.  **Open a Pull Request.**
 
-## 📜 License
+-----
 
-MIT License - see [LICENSE](LICENSE) file for details.
+## 📚 Resources
 
-## 🙏 Acknowledgments
+  * **Documentation:** See the `/docs` folder for advanced configuration.
+  * **GitHub Repository:** [KNOUX-ORG](https://www.google.com/search?q=https://github.com/KnouxOPS/KNOUX-ORG)
 
-- [TensorFlow.js](https://www.tensorflow.org/js) - Machine learning in the browser
-- [face-api.js](https://github.com/justadudewhohacks/face-api.js) - Face detection
-- [Tesseract.js](https://tesseract.projectnaptha.com/) - OCR text extraction
-- [Radix UI](https://www.radix-ui.com/) - Accessible UI primitives
-- [Lucide Icons](https://lucide.dev/) - Beautiful icons
+-----
 
----
+## 💖 Credits
 
-**Built with ❤️ by Knoux Technologies**
+**Built with love by Knoux Technologies.**
 
-_Transforming digital chaos into organized intelligence, one image at a time._
+Special thanks to the open-source community:
+
+  * *TensorFlow.js* for browser-based ML.
+  * *face-api.js* for bringing vision to the web.
+  * *Tesseract.js* for optical character recognition.
+
+-----
