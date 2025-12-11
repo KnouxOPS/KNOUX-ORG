@@ -1,3 +1,8 @@
+/**
+ * Updated type definitions for Knoux SmartOrganizer PRO
+ * Compatible with the unified AI engine
+ */
+
 export interface ImageFile {
   id: string;
   file: File;
@@ -14,63 +19,55 @@ export interface ImageFile {
 }
 
 export interface ImageAnalysis {
-  description: string;
-  confidence: number;
-  objects: DetectedObject[];
-  faces: FaceDetection[];
-  text: OCRResult;
-  isNSFW: boolean;
-  nsfwScore: number;
-  dominantColors: string[];
-  duplicateHash: string;
-  emotions?: string[];
-  location?: string;
-}
+  id: string;
+  file: File;
+  previewUrl: string;
+  error?: string;
 
-export interface DetectedObject {
-  label: string;
-  confidence: number;
-  bbox: BoundingBox;
-}
+  // Basic metadata
+  dimensions: { width: number; height: number };
+  size: number; // in MB
 
-export interface FaceDetection {
-  bbox: BoundingBox;
-  confidence: number;
-  landmarks?: FaceLandmark[];
-  expressions?: FaceExpression[];
-  age?: number;
-  gender?: string;
-}
+  // AI analysis results
+  classification?: { label: string; score: number }[];
+  description?: string;
+  objects?: { box: any; label: string; score: number }[];
+  nsfw?: {
+    className: "Porn" | "Hentai" | "Sexy" | "Drawing" | "Neutral";
+    probability: number;
+  }[];
+  faces?: {
+    age: number;
+    gender: "male" | "female" | "unknown";
+    expression: string;
+    confidence: number;
+    box: any;
+  }[];
+  ocrText?: string;
+  pHash?: string;
+  quality?: {
+    sharpness: number;
+    contrast: number;
+    brightness: number;
+    score: number;
+  };
+  palette?: string[];
 
-export interface BoundingBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+  // Processing stats
+  processingTime: number;
+  timestamp: Date;
 
-export interface FaceLandmark {
-  type: string;
-  x: number;
-  y: number;
-}
-
-export interface FaceExpression {
-  expression: string;
-  confidence: number;
-}
-
-export interface OCRResult {
-  text: string;
-  confidence: number;
-  language?: string;
-  words: OCRWord[];
-}
-
-export interface OCRWord {
-  text: string;
-  confidence: number;
-  bbox: BoundingBox;
+  // Legacy compatibility
+  confidence?: number;
+  dominantColors?: string[];
+  duplicateHash?: string;
+  isNSFW?: boolean;
+  nsfwScore?: number;
+  text?: {
+    text: string;
+    confidence: number;
+    words?: any[];
+  };
 }
 
 export type ImageCategory =
@@ -137,7 +134,7 @@ export interface AIModel {
   error?: string;
   version: string;
   size: string;
-  progress?: number; // 0-100
+  progress?: number;
 }
 
 export interface ProcessingProgress {
@@ -158,4 +155,9 @@ export interface SmartSuggestion {
   imageIds: string[];
   action: () => Promise<void>;
   preview?: string;
+}
+
+export interface DuplicateGroup {
+  group: string[];
+  similarity: number;
 }
