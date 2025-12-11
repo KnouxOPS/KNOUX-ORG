@@ -1,3 +1,8 @@
+/**
+ * Updated Image Organizer Hook
+ * Integrated with unified AI engine
+ */
+
 import { useState, useCallback, useRef } from "react";
 import type {
   ImageFile,
@@ -7,8 +12,9 @@ import type {
   OrganizeOptions,
   SmartSuggestion,
   ImageCategory,
-} from "@/types/organizer";
-import { aiEngine } from "@/lib/ai-engine";
+  ImageAnalysis,
+} from "@/types/organizer-updated";
+import { aiEngine } from "@/lib/ai-engine-unified";
 
 const DEFAULT_ORGANIZE_OPTIONS: OrganizeOptions = {
   autoRename: true,
@@ -55,13 +61,16 @@ export function useImageOrganizer() {
   });
   const [filters, setFilters] = useState<FilterOptions>(DEFAULT_FILTER_OPTIONS);
   const [organizeOptions, setOrganizeOptions] = useState<OrganizeOptions>(
-    DEFAULT_ORGANIZE_OPTIONS,
+    DEFAULT_ORGANIZE_OPTIONS
   );
   const [suggestions, setSuggestions] = useState<SmartSuggestion[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  /**
+   * Add images to the collection
+   */
   const addImages = useCallback(
     async (files: File[]) => {
       const newImages: ImageFile[] = [];
@@ -90,9 +99,12 @@ export function useImageOrganizer() {
       setImages((prev) => [...prev, ...newImages]);
       return newImages;
     },
-    [organizeOptions.generateThumbnails],
+    [organizeOptions.generateThumbnails]
   );
 
+  /**
+   * Generate thumbnail for an image
+   */
   const generateThumbnail = async (file: File): Promise<string> => {
     return new Promise((resolve) => {
       const canvas = document.createElement("canvas");
@@ -122,6 +134,9 @@ export function useImageOrganizer() {
     });
   };
 
+  /**
+   * Process all unprocessed images
+   */
   const processImages = useCallback(async () => {
     if (isProcessing || images.length === 0) return;
 
@@ -168,32 +183,60 @@ export function useImageOrganizer() {
           message: `Processing ${image.name}...`,
         }));
 
+        // Analyze image with unified AI engine
         const analysis = await aiEngine.analyzeImage(image.file);
+        
+        // Categorize based on analysis
         const category = aiEngine.categorizeImage(analysis);
+        
+        // Generate smart filename if enabled
         const smartName = organizeOptions.autoRename
           ? aiEngine.generateSmartFilename(analysis)
           : image.name;
 
+        // Update category count
         categorized[category] = (categorized[category] || 0) + 1;
 
+        // Extract tags from analysis
+        const tags: string[] = [category];
+        if (analysis.classification) {
+          tags.push(...analysis.classification.slice(0, 3).map(c => c.label));
+        }
+        if (analysis.ocrText && analysis.ocrText.length > 0) {
+          tags.push("text");
+        }
+        if (analysis.faces && analysis.faces.length > 0) {
+          tags.push("faces", `${analysis.faces.length}-people`);
+        }
+
+        // Update image with analysis results
         setImages((prev) =>
           prev.map((img) =>
             img.id === image.id
               ? {
                   ...img,
-                  analysis,
+                  analysis: {
+                    ...analysis,
+                    // Add compatibility fields
+                    confidence: analysis.classification?.[0]?.score || 0.5,
+                    dominantColors: analysis.palette || [],
+                    duplicateHash: analysis.pHash || "",
+                    isNSFW: analysis.nsfw?.some(n => n.probability > 0.7) || false,
+                    nsfwScore: analysis.nsfw?.[0]?.probability || 0,
+                    text: {
+                      text: analysis.ocrText || "",
+                      confidence: analysis.ocrText ? 0.8 : 0,
+                      words: [],
+                    },
+                  },
                   category,
                   name: smartName,
                   processed: true,
                   processedAt: new Date(),
-                  tags: [
-                    ...img.tags,
-                    category,
-                    ...analysis.text.text.split(" ").slice(0, 3),
-                  ],
+                  tags: [...new Set([...img.tags, ...tags])],
                 }
-              : img,
-          ),
+              : img
+          )
         );
 
         successful++;
@@ -202,6 +245,28 @@ export function useImageOrganizer() {
       } catch (error) {
         console.error(`Failed to process ${image.name}:`, error);
         errors++;
+        
+        setImages((prev) =>
+          prev.map((img) =>
+            img.id === image.id
+              ? {
+                  ...img,
+                  processed: true,
+                  processedAt: new Date(),
+                  analysis: {
+                    id: crypto.randomUUID(),
+                    file: img.file,
+                    previewUrl: img.url,
+                    dimensions: { width: 0, height: 0 },
+                    size: img.size / (1024 * 1024),
+                    processingTime: 0,
+                    timestamp: new Date(),
+                    error: `Processing failed: ${error}`,
+                  },
+                }
+              : img
+          )
+        );
       }
 
       processed++;
@@ -217,7 +282,7 @@ export function useImageOrganizer() {
       }));
     }
 
-    // Find duplicates
+    // Find duplicates if enabled
     if (organizeOptions.findDuplicates) {
       setProgress((prev) => ({
         ...prev,
@@ -225,11 +290,11 @@ export function useImageOrganizer() {
         message: "Finding duplicate images...",
       }));
 
-      const processedImages = images
+      const processedImagesWithAnalysis = images
         .filter((img) => img.processed && img.analysis)
         .map((img) => ({ id: img.id, analysis: img.analysis! }));
 
-      const duplicateGroups = aiEngine.findSimilarImages(processedImages);
+      const duplicateGroups = aiEngine.findSimilarImages(processedImagesWithAnalysis);
 
       // Generate suggestions for duplicates
       const duplicateSuggestions: SmartSuggestion[] = duplicateGroups.map(
@@ -240,17 +305,16 @@ export function useImageOrganizer() {
           description: `Found ${group.group.length} similar images`,
           imageIds: group.group,
           action: async () => {
-            // Keep the highest quality image and mark others as duplicates
             const imagesToUpdate = group.group.slice(1);
             setImages((prev) =>
               prev.map((img) =>
                 imagesToUpdate.includes(img.id)
                   ? { ...img, category: "duplicates" }
-                  : img,
-              ),
+                  : img
+              )
             );
           },
-        }),
+        })
       );
 
       setSuggestions((prev) => [...prev, ...duplicateSuggestions]);
@@ -272,6 +336,9 @@ export function useImageOrganizer() {
     setIsProcessing(false);
   }, [images, isProcessing, organizeOptions]);
 
+  /**
+   * Stop processing
+   */
   const stopProcessing = useCallback(() => {
     abortControllerRef.current?.abort();
     setIsProcessing(false);
@@ -282,16 +349,25 @@ export function useImageOrganizer() {
     }));
   }, []);
 
+  /**
+   * Remove an image
+   */
   const removeImage = useCallback((id: string) => {
     setImages((prev) => {
       const image = prev.find((img) => img.id === id);
       if (image?.url) {
         URL.revokeObjectURL(image.url);
       }
+      if (image?.thumbnail) {
+        URL.revokeObjectURL(image.thumbnail);
+      }
       return prev.filter((img) => img.id !== id);
     });
   }, []);
 
+  /**
+   * Clear all images
+   */
   const clearAll = useCallback(() => {
     images.forEach((img) => {
       if (img.url) URL.revokeObjectURL(img.url);
@@ -308,6 +384,9 @@ export function useImageOrganizer() {
     });
   }, [images]);
 
+  /**
+   * Filter images
+   */
   const filteredImages = images.filter((image) => {
     if (
       filters.categories.length > 0 &&
@@ -318,7 +397,7 @@ export function useImageOrganizer() {
 
     if (
       filters.hasText &&
-      (!image.analysis?.text.text || image.analysis.text.text.length === 0)
+      (!image.analysis?.ocrText || image.analysis.ocrText.length === 0)
     ) {
       return false;
     }
@@ -330,7 +409,7 @@ export function useImageOrganizer() {
       return false;
     }
 
-    if (filters.isNSFW !== image.analysis?.isNSFW) {
+    if (filters.isNSFW !== (image.analysis?.isNSFW || false)) {
       return false;
     }
 
@@ -343,7 +422,7 @@ export function useImageOrganizer() {
       const searchableText = [
         image.name,
         image.analysis?.description || "",
-        image.analysis?.text.text || "",
+        image.analysis?.ocrText || "",
         ...image.tags,
       ]
         .join(" ")
@@ -357,13 +436,19 @@ export function useImageOrganizer() {
     return true;
   });
 
+  /**
+   * Get images by category
+   */
   const getImagesByCategory = useCallback(
     (category: ImageCategory) => {
       return images.filter((img) => img.category === category);
     },
-    [images],
+    [images]
   );
 
+  /**
+   * Export results as JSON
+   */
   const exportResults = useCallback(() => {
     const results = {
       timestamp: new Date().toISOString(),
@@ -379,8 +464,10 @@ export function useImageOrganizer() {
               description: img.analysis.description,
               confidence: img.analysis.confidence,
               isNSFW: img.analysis.isNSFW,
-              faceCount: img.analysis.faces.length,
-              textLength: img.analysis.text.text.length,
+              faceCount: img.analysis.faces?.length || 0,
+              textLength: img.analysis.ocrText?.length || 0,
+              quality: img.analysis.quality,
+              colors: img.analysis.palette,
             }
           : null,
       })),
@@ -426,7 +513,7 @@ export function useImageOrganizer() {
       ([category, count]) => ({
         category: category as ImageCategory,
         count,
-      }),
+      })
     ),
   };
 }
